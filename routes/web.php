@@ -28,29 +28,6 @@ Route::prefix('/message')->group(function () {
     Route::get('/chat', function () {
         return view('chat');
     })->middleware('auth');
-    // trả về user hiện tại đang login
-    Route::get('/getUserLogin', function() {
-        return Auth::user();
-    })->middleware('auth');
-    // lấy các message trong db ra, đi kèm là thông tin user người gửi message đó
-    Route::get('/messages', function() {
-        return App\Models\Message::with('user')->get();
-    })->middleware('auth');
-    /* 
-        save message do user gửi đi vào db. Tạo thêm 1 route để Vue component có thể 
-        gọi và lấy dữ liệu chat ban đầu (history chat) lúc mới load trang. Quay trở lại Vue component ChatLayout.vue
-        để tiết lập sự kiện gửi tin nhắn.
-    */
-    Route::post('/messages', function() {
-        $user = Auth::user();
-
-        $message = new App\Models\Message();
-        $message->message = request()->get('message', '');
-        $message->user_id = $user->id;
-        $message->save();
-
-        return ['message'=>$message->load('user')];
-    })->middleware('auth');
 });
 
 Auth::routes();
